@@ -104,15 +104,15 @@ class BlackJack:
 		else:
 			return False
 			
-	def splitIsValid(self, playerCards):
+	def splitIsValid(self, playerCards, playerSplit):
 		
 		if (len(playerCards) == 2 ):
-			if(self.deck.cardNumber(playerCards[0]) == self.deck.cardNumber(playerCards[1])):
+			if(( self.deck.cardNumber(playerCards[0]) == self.deck.cardNumber(playerCards[1]) ) and ( not playerSplit )):
 				return True
 		
 		return False
  
-	def results(self, dealerCards, playerCards, bets):
+	def results(self, dealerCards, playerCards, bets, insurancesList):
 		print "########## Round results ############"
 		dealerBlackJack = BlackJack.hasBlackJack(self, dealerCards)
 		dealerPoints = BlackJack.sumCards(self, dealerCards)
@@ -135,6 +135,7 @@ class BlackJack:
 				print "Black Jack !"
 				
 			# Who wins + money earned
+			
 			win = 0
 			if(playersPoints[i] > 21):
 				print "Busted."
@@ -175,6 +176,15 @@ class BlackJack:
 							else:
 								print "Tie."
 								win = 0
+								
+			## TODO : pay insurance or not
+			if insurancesList[i]:
+				if dealerBlackJack:
+					print "Insurance was taken, and dealer had a BlackJack !"
+					win += bets[i]
+				else:
+					print "Insurance was taken, but dealer didn't have a BlackJack !"
+					win -= 0.5*bets[i]
 			
 			if (win >= 0):
 				print "Wins : {}".format(win)
@@ -194,7 +204,11 @@ class BlackJack:
 		while (keepPlaying):
 			print "--- New Round ----"
 			
+			## playersSplit2 is extended if a player splits, while playersSplit
+			## will always have len(self.players) elements
 			playersSplit = [False]*len(self.players)
+			playersSplit2 = [False]*len(self.players) 
+			insurancesList = [False]*len(self.players)
 			
 			### Display Players (and eject those who haven't enough money left) :
 			playersToEject = []
@@ -213,6 +227,7 @@ class BlackJack:
 			if(len(self.players) < 1):
 				print "No more players."
 				return 0
+			
 			### Ask for bets
 			bets = []
 			for i in range(len(self.players)):
@@ -245,30 +260,41 @@ class BlackJack:
 				
 			print BlackJack.displayPlayerCards(self, playerCards)
 			
+			### If dealer has Ace, player can choose insurance
+			if(self.deck.cardNumber(dealerCards[0]) == 0):
+				for i in range(len(self.players)):
+					playerAction = raw_input(self.players[i].getName() + ", do you want the insurance Y/N (N) ?")
+			
+					if playerAction == "Y":
+						insurancesList[i] = True
+						
+			
 			### Ask for players' actions
-			i = 0
+			i = 0 ## i counts the number of players (including splits)
+			j = 0 ## j counts the number of original players
 			cont = True
-			playersBackup = self.players
+			playersBackup = copy.deepcopy(self.players)
 			#~ for i in range(len(self.players)):
 			while cont:
 				
 				keepAsking = True
 				while (keepAsking):
+					
+					#~ print "-------------------",i
+					#~ print "------jjjjj--------",j
+					
 					if (BlackJack.sumCards(self, playerCards[i]) >= 21):
 							print "You cannot ask for a card anymore" # TODO : better text here
 							keepAsking = False
 					else:
-						# TODO : add split possibility
 						
 						splitString = ""
 						
 						print BlackJack.displayPlayerCards(self, playerCards, i)
 						
-						## TODO : cannot split if already split
-						if(self.splitIsValid(playerCards[i])):
+						if(self.splitIsValid(playerCards[i], playersSplit2[i])):
 							splitString = "to split (P),"
 						
-						## TODO : cannot double if split
 						if(BlackJack.doubleIsValid(self, playerCards[i])):
 							stringInput = ", do you want "+splitString+" to hit (H), to stay (S) or to double (D) ? "
 						else:
@@ -296,13 +322,10 @@ class BlackJack:
 						elif(playerAction == "S"):
 							keepAsking = False
 						elif(playerAction == "P"):
-							## TODO : cannot split if already split
-							if(self.splitIsValid(playerCards[i])):
+							if(self.splitIsValid(playerCards[i], playersSplit2[i])):
 								
-								playersSplit[i] = True
-								
-								## Backups
-								playersBackup = copy.deepcopy(self.players)
+								playersSplit[j] = True
+								playersSplit2[i] = True
 								
 								self.players.insert(i+1,copy.copy(self.players[i]))
 								self.players[i].name = self.players[i].name + " - hand #1"
@@ -314,19 +337,25 @@ class BlackJack:
 								playerCards.insert(i+1, [splittedCard, self.deck.drawCard()])
 								
 								bets.insert(i+1, bets[i])
+								insurancesList.insert(i+1, insurancesList[i])
+								playersSplit2.insert(i+1, playersSplit2[i])
+								
+								## j will be incremented twice at the end of the loop, so decrementing here
+								## makes it equal to the number of *real* players 
+								j = j-1
 								
 								#~ print self.players
 								#~ print playerCards
 								#~ print bets
 								#~ print BlackJack.displayPlayerCards(self, playerCards, i)
 								
-								pass
 							else:
-								"Cannot split here."
+								print "Cannot split here."
 						else:
 							print "Not a valid choice."
 							
 				i = i+1
+				j = j+1
 				
 				if (i >= len(self.players)):
 					cont = False
@@ -343,7 +372,7 @@ class BlackJack:
 					keepDrawing = False
 			
 			### Display win or lose and addMoney
-			BlackJack.results(self, dealerCards, playerCards, bets)
+			BlackJack.results(self, dealerCards, playerCards, bets, insurancesList)
 			
 			## TODO : correct amount of money for players who splitted
 			#~ print playersSplit
