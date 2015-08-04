@@ -1,12 +1,14 @@
 from Player import Player
 from Deck import Deck
+from Strategy import Strategy
 import copy
 
 class BlackJack:
 	
-	def __init__(self, deckNumbers=6): 	# TODO constructors with list of players and deck as parameter
+	def __init__(self, strategy=Strategy("player"), deckNumbers=6): 	# TODO constructors with list of players and deck as parameter
 		self.deck = Deck(deckNumbers)
 		self.players = [Player("Player 1", 200), Player("Player 2", 200)]
+		self.strategy = strategy
 	
 	def setDeck(self, newDeck):
 		self.deck = newDeck
@@ -233,7 +235,8 @@ class BlackJack:
 			for i in range(len(self.players)):
 				keepAsking = True
 				while (keepAsking):
-					inputBet = raw_input(self.players[i].getName() + ", what is your bet (10) ? ")
+					#~ inputBet = raw_input(self.players[i].getName() + ", what is your bet (10) ? ")
+					inputBet = self.strategy.getInput(self.players[i].getName() + ", what is your bet (10) ? ")
 					
 					## Default bet
 					if inputBet == "":
@@ -263,7 +266,8 @@ class BlackJack:
 			### If dealer has Ace, player can choose insurance
 			if(self.deck.cardNumber(dealerCards[0]) == 0):
 				for i in range(len(self.players)):
-					playerAction = raw_input(self.players[i].getName() + ", do you want the insurance Y/N (N) ?")
+					#~ playerAction = raw_input(self.players[i].getName() + ", do you want the insurance Y/N (N) ?")
+					playerAction = self.strategy.getInput(self.players[i].getName() + ", do you want the insurance Y/N (N) ?")
 			
 					if playerAction == "Y":
 						insurancesList[i] = True
@@ -300,7 +304,8 @@ class BlackJack:
 						else:
 							stringInput = ", do you want "+splitString+" to hit (H) or to stay (S) ? "
 
-						playerAction = raw_input(self.players[i].getName() + stringInput)
+						#~ playerAction = raw_input(self.players[i].getName() + stringInput)
+						playerAction = self.strategy.getInput(self.players[i].getName() + stringInput)
 						
 						if(playerAction == "H"):
 							if (BlackJack.sumCards(self, playerCards[i]) >= 21):
