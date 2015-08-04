@@ -1,3 +1,4 @@
+import pandas as pd
 
 class Strategy:
 	
@@ -6,6 +7,9 @@ class Strategy:
 	def __init__(self, name="player", strategyFile=None):
 		self.name = name
 		self.strategyFile = strategyFile
+		
+		if strategyFile is not None:
+			self.strategyDF = pd.DataFrame.from_csv(strategyFile)
 		
 	def __repr__(self):
 		return 'Name : ' + self.name + ' - File : {}'.format(self.strategyFile)
@@ -40,6 +44,8 @@ class Strategy:
 		return "N"
 
 	def inputAction(self, dealerCard, playerCards):
+		
+		## TODO
 		
 		return "H"
 		
