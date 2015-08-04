@@ -2,12 +2,19 @@ import random
 
 class Deck:
 	
-	def __init__(self, n=1):
+	def __init__(self, n=1, lang="French"):
 		""" By default, 52-card deck (french deck), shuffled """
 		self.size = 52
 		self.deck = Deck.init(self, n)
-		self.cardNames = ["As","2","3","4","5","6","7","8","9","10","Valet","Dame","Roi"]
-		self.colorNames = ["Trefle","Pique","Carreau","Coeur"]
+		self.lang = lang
+		
+		if lang=="English":
+			self.cardNames = ["Ace","2","3","4","5","6","7","8","9","10","Jack","Queen","King"]
+			self.colorNames = ["Clubs","Spades","Diamonds","Hearts"]
+		else:
+			self.cardNames = ["As","2","3","4","5","6","7","8","9","10","Valet","Dame","Roi"]
+			self.colorNames = ["Trefle","Pique","Carreau","Coeur"]	
+		
 		Deck.shuffle(self)
 		
 	def __repr__(self):
@@ -37,17 +44,23 @@ class Deck:
 		else:
 			return self.deck.pop(0)
 		
+	""" Takes int (id of card) as argument and returns string of card name according to 
+	deck parameters (cardNames and colorNames).
+	If card is list, display all cards with '\n' between them """
 	def displayCard(self, card):
 		# TODO : exception if length(cardNames)*length(colorNames) != size
-		""" Takes int (id of card) as argument and returns string of card name according to 
-			deck parameters (cardNames and colorNames).
-			If card is list, display all cards with '\n' between them """
+		
+		smallWord = " de "
+		
+		if self.lang == "English":
+			smallWord = " of "
+
 		if(isinstance(card, int)):
-			return '{}'.format(self.cardNames[Deck.cardNumber(self, card)]) + " de " + '{}'.format(self.colorNames[Deck.cardColorNumber(self, card)])
+			return '{}'.format(self.cardNames[Deck.cardNumber(self, card)]) + smallWord + '{}'.format(self.colorNames[Deck.cardColorNumber(self, card)])
 		elif(isinstance(card, list)):
 			returnString = ""
 			for i in range(len(card)):
-				returnString += '{}'.format(self.cardNames[Deck.cardNumber(self, card[i])]) + " de " + '{}'.format(self.colorNames[Deck.cardColorNumber(self, card[i])])
+				returnString += '{}'.format(self.cardNames[Deck.cardNumber(self, card[i])]) + smallWord + '{}'.format(self.colorNames[Deck.cardColorNumber(self, card[i])])
 				returnString += "\n"
 			return returnString
 		else:

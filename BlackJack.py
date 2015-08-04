@@ -5,8 +5,8 @@ import copy
 
 class BlackJack:
 	
-	def __init__(self, strategy=Strategy("player"), deckNumbers=6): 	# TODO constructors with list of players and deck as parameter
-		self.deck = Deck(deckNumbers)
+	def __init__(self, strategy=Strategy("player"), deckNumbers=6, lang="French"): 	# TODO constructors with list of players and deck as parameter
+		self.deck = Deck(deckNumbers, lang)
 		self.players = [Player("Player 1", 200), Player("Player 2", 200)]
 		self.strategy = strategy
 	
