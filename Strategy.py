@@ -1,6 +1,8 @@
 
 class Strategy:
 	
+	## TODO : add count
+	
 	def __init__(self, name="player", strategyFile=None):
 		self.name = name
 		self.strategyFile = strategyFile
@@ -18,12 +20,29 @@ class Strategy:
 		
 		return raw_input(text)
 		
-	## TODO : add question type
-	def getInput(self, text):
+	def getInput(self, text, inputType, dealerCard=None, playerCards=None):
 		
 		if self.name == "player":
 			return self.getRawInput(text)
-		
+		else:
+			if inputType == "BET":
+				return self.inputBet()
+			elif inputType == "INSURANCE":
+				return self.inputInsurance()
+			elif inputType == "ACTION":
+				return self.inputAction(dealerCard, playerCards)
 		## TODO : other cases (AI strategies)
 		
 		return self.getRawInput(text)
+		
+	def inputInsurance(self):
+		
+		return "N"
+
+	def inputAction(self, dealerCard, playerCards):
+		
+		return "H"
+		
+	def inputBet(self):
+		
+		return "10"

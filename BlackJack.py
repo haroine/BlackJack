@@ -2,6 +2,7 @@ from Player import Player
 from Deck import Deck
 from Strategy import Strategy
 import copy
+import time
 
 class BlackJack:
 	
@@ -204,6 +205,8 @@ class BlackJack:
 		
 		keepPlaying = True
 		while (keepPlaying):
+			
+			#~ time.sleep(5)
 			print "--- New Round ----"
 			
 			## playersSplit2 is extended if a player splits, while playersSplit
@@ -236,7 +239,7 @@ class BlackJack:
 				keepAsking = True
 				while (keepAsking):
 					#~ inputBet = raw_input(self.players[i].getName() + ", what is your bet (10) ? ")
-					inputBet = self.strategy.getInput(self.players[i].getName() + ", what is your bet (10) ? ")
+					inputBet = self.strategy.getInput(self.players[i].getName() + ", what is your bet (10) ? ", "BET")
 					
 					## Default bet
 					if inputBet == "":
@@ -267,7 +270,7 @@ class BlackJack:
 			if(self.deck.cardNumber(dealerCards[0]) == 0):
 				for i in range(len(self.players)):
 					#~ playerAction = raw_input(self.players[i].getName() + ", do you want the insurance Y/N (N) ?")
-					playerAction = self.strategy.getInput(self.players[i].getName() + ", do you want the insurance Y/N (N) ?")
+					playerAction = self.strategy.getInput(self.players[i].getName() + ", do you want the insurance Y/N (N) ?", "INSURANCE")
 			
 					if playerAction == "Y":
 						insurancesList[i] = True
@@ -305,7 +308,8 @@ class BlackJack:
 							stringInput = ", do you want "+splitString+" to hit (H) or to stay (S) ? "
 
 						#~ playerAction = raw_input(self.players[i].getName() + stringInput)
-						playerAction = self.strategy.getInput(self.players[i].getName() + stringInput)
+						playerAction = self.strategy.getInput(self.players[i].getName() + stringInput, "ACTION",
+										dealerCards[0], playerCards[i])
 						
 						if(playerAction == "H"):
 							if (BlackJack.sumCards(self, playerCards[i]) >= 21):

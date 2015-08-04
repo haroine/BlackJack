@@ -1,8 +1,11 @@
 from Deck import Deck
 from BlackJack import BlackJack
+from Strategy import Strategy
 
 #deck = Deck(2)
 #print deck
 
-game1 = BlackJack(lang="French")
+strategy = Strategy("default")
+
+game1 = BlackJack(strategy=strategy, lang="French")
 game1.playBlackjack()
