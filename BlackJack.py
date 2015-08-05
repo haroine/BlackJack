@@ -3,6 +3,7 @@ from Deck import Deck
 from Strategy import Strategy
 import copy
 import time
+import pandas as pd
 
 class BlackJack:
 	
@@ -232,8 +233,15 @@ class BlackJack:
 	def playBlackjack(self):
 		
 		verbose = self.verbose
-		
 		defaultBet = 10
+		columnsLog = ['dealerCard']
+		
+		for i, player in enumerate(self.players):
+			playerNumber = str(i+1)
+			columnsLog.extend(['bet_player'+playerNumber,'cards_'+playerNumber,
+								'actions_player'+playerNumber])
+		
+		logDF = pd.DataFrame(columns=columnsLog)
 		
 		""" Main function for the black jack game with inputs from human players """
 		
