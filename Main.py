@@ -5,7 +5,8 @@ from Strategy import Strategy
 #deck = Deck(2)
 #print deck
 
-strategy = Strategy("default")
+#~ strategy = Strategy("default")
+strategy = Strategy("basic", strategyFile="strategies/basic_strategy.csv")
 
 game1 = BlackJack(strategy=strategy, lang="French")
 game1.playBlackjack()

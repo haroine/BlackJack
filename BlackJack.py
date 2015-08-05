@@ -206,7 +206,7 @@ class BlackJack:
 		keepPlaying = True
 		while (keepPlaying):
 			
-			#~ time.sleep(5)
+			time.sleep(5)
 			print "--- New Round ----"
 			
 			## playersSplit2 is extended if a player splits, while playersSplit
@@ -309,7 +309,7 @@ class BlackJack:
 
 						#~ playerAction = raw_input(self.players[i].getName() + stringInput)
 						playerAction = self.strategy.getInput(self.players[i].getName() + stringInput, "ACTION",
-										dealerCards[0], playerCards[i])
+										self.deck.cardNumber(dealerCards[0]), playerCards[i], BlackJack.sumCards(self, playerCards[i]))
 						
 						if(playerAction == "H"):
 							if (BlackJack.sumCards(self, playerCards[i]) >= 21):
