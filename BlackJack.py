@@ -6,7 +6,8 @@ import time
 
 class BlackJack:
 	
-	def __init__(self, strategy=Strategy("player"), deckNumbers=6, lang="French", sleep=0): 	# TODO constructors with list of players and deck as parameter
+	# TODO constructors with list of players and deck as parameter
+	def __init__(self, strategy=Strategy("player"), deckNumbers=6, lang="French", sleep=0):
 		self.deck = Deck(deckNumbers, lang)
 		self.players = [Player("Player 1", 200), Player("Player 2", 200)]
 		self.strategy = strategy
@@ -81,12 +82,14 @@ class BlackJack:
 			
 		return returnString
 		
+	""" Number of cards needed for one round """
 	def cardsNeeded(self):
-		""" Number of cards needed for one round """
-		return 3*(len(self.players)+1)
+
+		return 4*(len(self.players)+1)
 	
+	""" True if there are more than cardsNeeded(self) cards left in deck """
 	def enoughCardsLeft(self):
-		""" True if there are more than cardsNeeded(self) cards left in deck """
+
 		if(len(self.deck.deck) >= BlackJack.cardsNeeded(self)):
 			return True
 		else:
@@ -100,7 +103,6 @@ class BlackJack:
 		return False
 
 	def doubleIsValid(self, playerCards):
-		""" Returns True if double is valid, false if it is not """
 		# TODO : modify to comply to different casino rules
 
 		if(len(playerCards) == 2):
