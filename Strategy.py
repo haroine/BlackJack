@@ -117,4 +117,4 @@ class Strategy:
 		
 	def inputBet(self):
 		
-		return "10"
+		return "1"
