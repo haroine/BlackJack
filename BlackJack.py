@@ -4,11 +4,12 @@ from Strategy import Strategy
 import copy
 import time
 import pandas as pd
+import numpy as np
 
 class BlackJack:
 	
 	# TODO constructors with list of players and deck as parameter
-	def __init__(self, players, strategy=Strategy("player"), deckNumbers=6, lang="French", sleep=0):
+	def __init__(self, players, strategy=Strategy("player"), deckNumbers=6, lang="French", sleep=0, nRounds=1000):
 		self.deck = Deck(deckNumbers, lang)
 		self.players = players
 		self.strategy = strategy
@@ -16,6 +17,17 @@ class BlackJack:
 		self.deckNumbers = deckNumbers
 		self.lang = lang
 		self.verbose = False
+		self.nRounds = nRounds
+		self.currentRoundNumber = 0
+		
+		columnsLog = ['dealerCard']
+		
+		for i, player in enumerate(self.players):
+			playerNumber = str(i+1)
+			columnsLog.extend(['money_player'+playerNumber,'bet_player'+playerNumber,'cards_'+playerNumber,
+								'actions_player'+playerNumber])
+		
+		self.logDF = pd.DataFrame(columns=columnsLog)
 		
 		if self.strategy.name == "player":
 			self.verbose = True
@@ -228,25 +240,27 @@ class BlackJack:
 					print "Loses : {}".format(-win)
 				
 			self.players[i].addMoney(win)
+			
+			## TODO : return info for logDF
 
 	""" -------- Play BlackJack ! -------- """
 	def playBlackjack(self):
 		
 		verbose = self.verbose
 		defaultBet = 10
-		columnsLog = ['dealerCard']
-		
-		for i, player in enumerate(self.players):
-			playerNumber = str(i+1)
-			columnsLog.extend(['bet_player'+playerNumber,'cards_'+playerNumber,
-								'actions_player'+playerNumber])
-		
-		logDF = pd.DataFrame(columns=columnsLog)
-		
-		""" Main function for the black jack game with inputs from human players """
 		
 		keepPlaying = True
 		while (keepPlaying):
+			
+			self.currentRoundNumber += 1
+			
+			print self.currentRoundNumber
+			
+			if self.currentRoundNumber > self.nRounds :
+				self.logDF.to_csv("logDF.csv")
+				return 0
+			
+			self.logDF.loc[self.currentRoundNumber] = np.nan
 			
 			if self.sleep > 0:
 				time.sleep(self.sleep)
@@ -261,11 +275,16 @@ class BlackJack:
 			insurancesList = [False]*len(self.players)
 			
 			### Display Players (and eject those who haven't enough money left) :
+			
+			
+			
 			playersToEject = []
 			for i in range(len(self.players)):
 				if(self.players[i].getMoney() > 0):
 					if verbose:
 						print self.players[i]
+						
+					self.logDF['money_player'+str(i+1)][self.currentRoundNumber] = self.players[i].getMoney()
 				else:
 					if verbose:
 						print self.players[i].getName() + " has no money left."
