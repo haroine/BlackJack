@@ -9,7 +9,7 @@ class BlackJack:
 	# TODO constructors with list of players and deck as parameter
 	def __init__(self, strategy=Strategy("player"), deckNumbers=6, lang="French", sleep=0):
 		self.deck = Deck(deckNumbers, lang)
-		self.players = [Player("Player 1", 200), Player("Player 2", 200)]
+		self.players = [Player("Player 1", 1000), Player("Player 2", 1000)]
 		self.strategy = strategy
 		self.sleep = sleep
 		self.deckNumbers = deckNumbers
@@ -201,7 +201,7 @@ class BlackJack:
 				
 			self.players[i].addMoney(win)
 
-	####### Play BlackJack ! ######
+	""" -------- Play BlackJack ! -------- """
 	def playBlackjack(self):
 		
 		defaultBet = 10

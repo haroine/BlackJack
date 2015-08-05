@@ -2,9 +2,6 @@ from Deck import Deck
 from BlackJack import BlackJack
 from Strategy import Strategy
 
-#deck = Deck(2)
-#print deck
-
 #~ strategy = Strategy("default")
 strategy = Strategy("basic", strategyFile="strategies/basic_strategy.csv")
 
