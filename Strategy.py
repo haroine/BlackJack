@@ -74,7 +74,7 @@ class Strategy:
 			
 			cardIndex = min(playerCards[0],10)
 			
-			rowNumber = 35 - playerCards[0]
+			rowNumber = 34 - playerCards[0]
 			
 			print rowNumber
 			print dealerCardNumber
