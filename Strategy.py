@@ -77,8 +77,6 @@ class Strategy:
 			
 			rowNumber = 34 - playerCards[0]
 			
-			print rowNumber
-			print dealerCardNumber
 			action = self.validateAction(self.strategyDF.iloc[rowNumber][dealerCardNumber], doubleIsValid, splitIsValid, 
 											sumCards, dealerCardNumber)
 			return action

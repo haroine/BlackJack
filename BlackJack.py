@@ -125,7 +125,12 @@ class BlackJack:
 		return False
  
 	def results(self, dealerCards, playerCards, bets, insurancesList):
-		print "########## Round results ############"
+		
+		verbose = self.verbose
+		
+		if verbose:
+			print "########## Round results ############"
+			
 		dealerBlackJack = BlackJack.hasBlackJack(self, dealerCards)
 		dealerPoints = BlackJack.sumCards(self, dealerCards)
 		playersPoints = []
@@ -137,79 +142,96 @@ class BlackJack:
 			playersBlackJack.append(BlackJack.hasBlackJack(self, playerCards[i]))
 		
 		## addMoney and print results
-		print "Dealer, total points : {}".format(dealerPoints)
-		if(dealerBlackJack):
-			print "Black Jack !"
+		if verbose:
+			print "Dealer, total points : {}".format(dealerPoints)
+			if(dealerBlackJack):
+				print "Black Jack !"
 			
 		for i in range(len(self.players)):
-			print self.players[i].getName() + " , total points : {}".format(playersPoints[i])
-			if(playersBlackJack[i]):
-				print "Black Jack !"
+			
+			if verbose:
+				print self.players[i].getName() + " , total points : {}".format(playersPoints[i])
+				if(playersBlackJack[i]):
+					print "Black Jack !"
 				
 			# Who wins + money earned
 			
 			win = 0
 			if(playersPoints[i] > 21):
-				print "Busted."
+				if verbose:
+					print "Busted."
 				win = -bets[i]
 			else:
 				if(dealerPoints > 21):
-					print "Dealer is busted."
+					if verbose:
+						print "Dealer is busted."
 					win = bets[i]
 					if(playersBlackJack[i]):
-						print "Black Jack pays 3:2"
+						if verbose:
+							print "Black Jack pays 3:2"
 						win = 1.5*bets[i]
 				else:
 					if(playersPoints[i] > dealerPoints):
-						print "Dealer pays."
+						if verbose:
+							print "Dealer pays."
 						if(not playersBlackJack[i]):
 							win = bets[i]
 						else:
-							print "Black Jack pays 3:2"
+							if verbose:
+								print "Black Jack pays 3:2"
 							win = 1.5*bets[i]
 					elif(playersPoints[i] < dealerPoints):
-						print "Dealer wins."
+						if verbose:
+							print "Dealer wins."
 						win = -bets[i]
 					else:
 						if(not playersBlackJack[i] and not dealerBlackJack):
-							print "Tie."
+							if verbose:
+								print "Tie."
 							win = 0
 						else:
 							if(dealerBlackJack and playersBlackJack[i]):
-								print "Tie."
+								if verbose:
+									print "Tie."
 								win = 0
 								# TODO : in this case, dealers pays player's BlackJack ?
 							elif(dealerBlackJack and not playersBlackJack[i]):
-								print "Dealer has Black Jack. Dealer wins."
+								if verbose:
+									print "Dealer has Black Jack. Dealer wins."
 								win = -bets[i]
 							elif(playersBlackJack[i] and not dealerBlackJack):
-								print "Player has Black Jack. Dealer pays 3:2."
+								if verbose:
+									print "Player has Black Jack. Dealer pays 3:2."
 								win = 1.5*bets[i]
 							else:
-								print "Tie."
+								if verbose:
+									print "Tie."
 								win = 0
 								
 			## TODO : pay insurance or not
 			if insurancesList[i]:
 				if dealerBlackJack:
-					print "Insurance was taken, and dealer had a BlackJack !"
+					if verbose:
+						print "Insurance was taken, and dealer had a BlackJack !"
 					win += bets[i]
 				else:
-					print "Insurance was taken, but dealer didn't have a BlackJack !"
+					if verbose:
+						print "Insurance was taken, but dealer didn't have a BlackJack !"
 					win -= 0.5*bets[i]
 			
 			if (win >= 0):
-				print "Wins : {}".format(win)
+				if verbose:
+					print "Wins : {}".format(win)
 			else:
-				print "Loses : {}".format(-win)
+				if verbose:
+					print "Loses : {}".format(-win)
 				
 			self.players[i].addMoney(win)
 
 	""" -------- Play BlackJack ! -------- """
-	def playBlackjack(self, verbose=None):
+	def playBlackjack(self):
 		
-		if verbose is None:
-			verbose = self.verbose
+		verbose = self.verbose
 		
 		defaultBet = 10
 		
@@ -221,7 +243,8 @@ class BlackJack:
 			if self.sleep > 0:
 				time.sleep(self.sleep)
 				
-			print "--- New Round ----"
+			if verbose:
+				print "--- New Round ----"
 			
 			## playersSplit2 is extended if a player splits, while playersSplit
 			## will always have len(self.players) elements
@@ -233,10 +256,12 @@ class BlackJack:
 			playersToEject = []
 			for i in range(len(self.players)):
 				if(self.players[i].getMoney() > 0):
-					print self.players[i]
+					if verbose:
+						print self.players[i]
 				else:
-					print self.players[i].getName() + " has no money left."
-					print self.players[i].getName() + " is out of the game !"
+					if verbose:
+						print self.players[i].getName() + " has no money left."
+						print self.players[i].getName() + " is out of the game !"
 					playersToEject.append(i)
 			
 			if(len(playersToEject) > 0):
@@ -252,8 +277,12 @@ class BlackJack:
 			for i in range(len(self.players)):
 				keepAsking = True
 				while (keepAsking):
-					#~ inputBet = raw_input(self.players[i].getName() + ", what is your bet (10) ? ")
-					inputBet = self.strategy.getInput(self.players[i].getName() + ", what is your bet (10) ? ", "BET")
+					
+					questionText = ""
+					if verbose:
+						questionText = self.players[i].getName() + ", what is your bet (10) ? "
+						
+					inputBet = self.strategy.getInput(questionText, "BET")
 					
 					## Default bet
 					if inputBet == "":
@@ -271,20 +300,27 @@ class BlackJack:
 			
 			### Give cards to players + to dealer
 			dealerCards = self.deck.drawCard(2)
-			print BlackJack.displayDealerCards(self, dealerCards)
+			
+			if verbose:
+				print BlackJack.displayDealerCards(self, dealerCards)
 			
 			playerCards = []
 			for i in range(len(self.players)):
 				cards = self.deck.drawCard(2)
 				playerCards.append(cards)
 				
-			print BlackJack.displayPlayerCards(self, playerCards)
+			if verbose:
+				print BlackJack.displayPlayerCards(self, playerCards)
 			
 			### If dealer has Ace, player can choose insurance
 			if(self.deck.cardNumber(dealerCards[0]) == 0):
 				for i in range(len(self.players)):
-					#~ playerAction = raw_input(self.players[i].getName() + ", do you want the insurance Y/N (N) ?")
-					playerAction = self.strategy.getInput(self.players[i].getName() + ", do you want the insurance Y/N (N) ?", "INSURANCE")
+					
+					questionText = ""
+					if verbose:
+						questionText = self.players[i].getName() + ", do you want the insurance Y/N (N) ?"
+						
+					playerAction = self.strategy.getInput(questionText, "INSURANCE")
 			
 					if playerAction == "Y":
 						insurancesList[i] = True
@@ -305,44 +341,55 @@ class BlackJack:
 					#~ print "------jjjjj--------",j
 					
 					if (BlackJack.sumCards(self, playerCards[i]) >= 21):
-							print "You cannot ask for a card anymore" # TODO : better text here
+							if verbose:
+								print "You cannot ask for a card anymore" # TODO : better text here
 							keepAsking = False
 					else:
 						
-						splitString = ""
+						questionText = ""
 						
-						print BlackJack.displayPlayerCards(self, playerCards, i)
-						
-						if(self.splitIsValid(playerCards[i], playersSplit2[i])):
-							splitString = "to split (P),"
-						
-						if(BlackJack.doubleIsValid(self, playerCards[i])):
-							stringInput = ", do you want "+splitString+" to hit (H), to stay (S) or to double (D) ? "
-						else:
-							stringInput = ", do you want "+splitString+" to hit (H) or to stay (S) ? "
+						if verbose:
+							splitString = ""
+							
+							print BlackJack.displayPlayerCards(self, playerCards, i)
+							
+							if(self.splitIsValid(playerCards[i], playersSplit2[i])):
+								splitString = "to split (P),"
+							
+							if(BlackJack.doubleIsValid(self, playerCards[i])):
+								stringInput = ", do you want "+splitString+" to hit (H), to stay (S) or to double (D) ? "
+							else:
+								stringInput = ", do you want "+splitString+" to hit (H) or to stay (S) ? "
+								
+							questionText = self.players[i].getName() + stringInput
 
 						#~ playerAction = raw_input(self.players[i].getName() + stringInput)
-						playerAction = self.strategy.getInput(self.players[i].getName() + stringInput, "ACTION",
+						playerAction = self.strategy.getInput(questionText, "ACTION",
 										self.deck.cardNumber(dealerCards[0]), self.deck.cardNumberList(playerCards[i]), BlackJack.sumCards(self, playerCards[i]),
 										BlackJack.doubleIsValid(self, playerCards[i]), self.splitIsValid(playerCards[i], playersSplit2[i]))
 						
 						if(playerAction == "H"):
 							if (BlackJack.sumCards(self, playerCards[i]) >= 21):
-								print "You cannot ask for a card anymore" # TODO : better text here
+								if verbose:
+									print "You cannot ask for a card anymore" # TODO : better text here
 								keepAsking = False
 							else:
 								playerCards[i].append(self.deck.drawCard())
-								print BlackJack.displayPlayerCards(self, playerCards, i)
+								if verbose:
+									print BlackJack.displayPlayerCards(self, playerCards, i)
 						elif(playerAction == "D"):
 							if(BlackJack.doubleIsValid(self, playerCards[i])):
-								print "Your bet has been doubled."
+								if verbose:
+									print "Your bet has been doubled."
 								bets[i] = 2*bets[i]
 								playerCards[i].append(self.deck.drawCard())
-								print BlackJack.displayPlayerCards(self, playerCards, i)
-								print "You've chose to Double, you cannot ask for a card anymore"
+								if verbose:
+									print BlackJack.displayPlayerCards(self, playerCards, i)
+									print "You've chose to Double, you cannot ask for a card anymore"
 								keepAsking = False
 							else:
-								print "You can't double in this situation."
+								if verbose:
+									print "You can't double in this situation."
 						elif(playerAction == "S"):
 							keepAsking = False
 						elif(playerAction == "P"):
@@ -374,6 +421,7 @@ class BlackJack:
 								#~ print BlackJack.displayPlayerCards(self, playerCards, i)
 								
 							else:
+								
 								print "Cannot split here."
 						else:
 							print "Not a valid choice."
@@ -387,12 +435,16 @@ class BlackJack:
 			### Make dealer draw or stay
 			keepDrawing = True
 			while (keepDrawing):
-				print BlackJack.displayDealerCards(self, dealerCards, True) # Show Dealer cards
+				if verbose:
+					print BlackJack.displayDealerCards(self, dealerCards, True) # Show Dealer cards
+					
 				if(BlackJack.sumCards(self, dealerCards) <= 16):
-					print "Dealer draws"
+					if verbose:
+						print "Dealer draws"
 					dealerCards.append(self.deck.drawCard())
 				else:
-					print "Dealer stands"
+					if verbose:
+						print "Dealer stands"
 					keepDrawing = False
 			
 			### Display win or lose and addMoney
