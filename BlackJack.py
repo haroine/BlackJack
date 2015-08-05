@@ -14,6 +14,10 @@ class BlackJack:
 		self.sleep = sleep
 		self.deckNumbers = deckNumbers
 		self.lang = lang
+		self.verbose = False
+		
+		if self.strategy.name == "player":
+			self.verbose = True
 	
 	def setDeck(self, newDeck):
 		self.deck = newDeck
@@ -202,7 +206,10 @@ class BlackJack:
 			self.players[i].addMoney(win)
 
 	""" -------- Play BlackJack ! -------- """
-	def playBlackjack(self):
+	def playBlackjack(self, verbose=None):
+		
+		if verbose is None:
+			verbose = self.verbose
 		
 		defaultBet = 10
 		
