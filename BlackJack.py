@@ -12,6 +12,8 @@ class BlackJack:
 		self.players = [Player("Player 1", 200), Player("Player 2", 200)]
 		self.strategy = strategy
 		self.sleep = sleep
+		self.deckNumbers = deckNumbers
+		self.lang = lang
 	
 	def setDeck(self, newDeck):
 		self.deck = newDeck
@@ -314,7 +316,7 @@ class BlackJack:
 
 						#~ playerAction = raw_input(self.players[i].getName() + stringInput)
 						playerAction = self.strategy.getInput(self.players[i].getName() + stringInput, "ACTION",
-										self.deck.cardNumber(dealerCards[0]), playerCards[i], BlackJack.sumCards(self, playerCards[i]),
+										self.deck.cardNumber(dealerCards[0]), self.deck.cardNumberList(playerCards[i]), BlackJack.sumCards(self, playerCards[i]),
 										BlackJack.doubleIsValid(self, playerCards[i]), self.splitIsValid(playerCards[i], playersSplit2[i]))
 						
 						if(playerAction == "H"):
@@ -410,5 +412,13 @@ class BlackJack:
 			if(not BlackJack.enoughCardsLeft(self)):
 				print "No more cards left in deck. Cards will be shuffled."
 				keepPlaying = False
-				BlackJack.setDeck(self, Deck())
-				BlackJack.playBlackjack(self)
+				self.deck = Deck(self.deckNumbers, self.lang)
+				
+				#~ try:
+					#~ BlackJack.playBlackjack(self)
+				#~ except:
+					#~ print "End of game"
+					#~ print self.deck
+					#~ return 0
+					
+				self.playBlackjack()

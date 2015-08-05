@@ -55,16 +55,6 @@ class Strategy:
 		## Rows 16-24: soft totals (A;9 -> A;A)
 		## Rows 25-33: pairs (10;10 -> 2;2)
 		
-		## Pairs
-		if (playerCards[0] == playerCards[1]):
-			
-			cardIndex = min(playerCards[0],10)
-			
-			rowNumber = 35 - playerCards[0]
-			
-			action = Strategy.validateAction(self.strategyDF.iloc[rowNumber][dealerCardNumber], doubleIsValid, splitIsValid)
-			return action
-		
 		## Soft totals
 		if (np.product(playerCards) == 0):
 			
@@ -79,11 +69,19 @@ class Strategy:
 			action = Strategy.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber], doubleIsValid, splitIsValid)
 			return action
 			
+		## Pairs
+		if (playerCards[0] == playerCards[1]):
+			
+			cardIndex = min(playerCards[0],10)
+			
+			rowNumber = 35 - playerCards[0]
+			
+			print rowNumber
+			print dealerCardNumber
+			action = Strategy.validateAction(self.strategyDF.iloc[rowNumber][dealerCardNumber], doubleIsValid, splitIsValid)
+			return action
 		
 		## Hard totals
-		#~ print "-----------------"
-		#~ print 20-sumCards
-		#~ print dealerCardNumber
 		action = Strategy.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber], doubleIsValid, splitIsValid)
 		return action
 		

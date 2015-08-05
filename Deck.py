@@ -71,3 +71,16 @@ class Deck:
 		
 	def cardColorNumber(self, card):
 		return card/len(self.cardNames)
+		
+	def cardNumberList(self, cardList):
+		
+		if len(cardList) > 1:
+			
+			returnList = [-1]*len(cardList)
+			
+			for i, card in enumerate(cardList):
+				returnList[i] = self.cardNumber(card)
+				
+			return returnList
+		else:
+			return self.cardNumber(cardList)
