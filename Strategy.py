@@ -66,7 +66,8 @@ class Strategy:
 			if cardIndex == 10: ## Black Jack, nothing won't be asked anyway
 				return "H"
 			
-			action = Strategy.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber], doubleIsValid, splitIsValid)
+			action = self.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber], doubleIsValid, splitIsValid, 
+											sumCards, dealerCardNumber)
 			return action
 			
 		## Pairs
@@ -78,19 +79,20 @@ class Strategy:
 			
 			print rowNumber
 			print dealerCardNumber
-			action = Strategy.validateAction(self.strategyDF.iloc[rowNumber][dealerCardNumber], doubleIsValid, splitIsValid)
+			action = self.validateAction(self.strategyDF.iloc[rowNumber][dealerCardNumber], doubleIsValid, splitIsValid, 
+											sumCards, dealerCardNumber)
 			return action
 		
 		## Hard totals
-		action = Strategy.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber], doubleIsValid, splitIsValid)
+		action = self.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber], doubleIsValid, splitIsValid, 
+										sumCards, dealerCardNumber)
 		return action
 		
 		return "H"
 		
 	""" Some actions are not always valid, this function validates
 	them for the rules in place (to be implemented by hand) """
-	@staticmethod
-	def validateAction(action, doubleIsValid, splitIsValid):
+	def validateAction(self, action, doubleIsValid, splitIsValid, sumCards, dealerCardNumber):
 		
 		validatedAction = action
 		
@@ -109,6 +111,13 @@ class Strategy:
 				return "D"
 			else:
 				return "S"
+				
+		## If split is not valid, get action from same hard total
+		if action=="P":
+			if splitIsValid:
+				return "P"
+			else:
+				return self.inputAction(dealerCardNumber, [3,4], sumCards, doubleIsValid, splitIsValid)
 			
 		return validatedAction
 			
