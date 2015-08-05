@@ -26,7 +26,7 @@ class Strategy:
 		
 		return raw_input(text)
 		
-	def getInput(self, text, inputType, dealerCard=None, playerCards=None, sumCards=0):
+	def getInput(self, text, inputType, dealerCard=None, playerCards=None, sumCards=0, doubleIsValid=True, splitIsValid=False):
 		
 		if self.name == "player":
 			return self.getRawInput(text)
@@ -36,7 +36,7 @@ class Strategy:
 			elif inputType == "INSURANCE":
 				return self.inputInsurance()
 			elif inputType == "ACTION":
-				return self.inputAction(dealerCard, playerCards, sumCards)
+				return self.inputAction(dealerCard, playerCards, sumCards, doubleIsValid, splitIsValid)
 		## TODO : other cases (AI strategies)
 		
 		return self.getRawInput(text)
@@ -45,7 +45,7 @@ class Strategy:
 		
 		return "N"
 
-	def inputAction(self, dealerCardNumber, playerCards, sumCards):
+	def inputAction(self, dealerCardNumber, playerCards, sumCards, doubleIsValid, splitIsValid):
 		
 		if self.strategyDF is None:
 			raise IOError("Strategy file is not loaded.")
@@ -62,7 +62,7 @@ class Strategy:
 			
 			rowNumber = 35 - playerCards[0]
 			
-			action = Strategy.validateAction(self.strategyDF.iloc[rowNumber][dealerCardNumber])
+			action = Strategy.validateAction(self.strategyDF.iloc[rowNumber][dealerCardNumber], doubleIsValid, splitIsValid)
 			return action
 		
 		## Soft totals
@@ -76,7 +76,7 @@ class Strategy:
 			if cardIndex == 10: ## Black Jack, nothing won't be asked anyway
 				return "H"
 			
-			action = Strategy.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber])
+			action = Strategy.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber], doubleIsValid, splitIsValid)
 			return action
 			
 		
@@ -84,7 +84,7 @@ class Strategy:
 		#~ print "-----------------"
 		#~ print 20-sumCards
 		#~ print dealerCardNumber
-		action = Strategy.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber])
+		action = Strategy.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber], doubleIsValid, splitIsValid)
 		return action
 		
 		return "H"
@@ -92,19 +92,25 @@ class Strategy:
 	""" Some actions are not always valid, this function validates
 	them for the rules in place (to be implemented by hand) """
 	@staticmethod
-	def validateAction(action):
+	def validateAction(action, doubleIsValid, splitIsValid):
 		
 		validatedAction = action
 		
+		## Surrender is illegal for now
 		if action == "SU":
 			return "H"
 			
-		## TODO : try to double
 		if action == "DH":
-			return "H"
+			if doubleIsValid:
+				return "D"
+			else:
+				return "H"
 			
 		if action == "DS":
-			return "S"
+			if doubleIsValid:
+				return "D"
+			else:
+				return "S"
 			
 		return validatedAction
 			

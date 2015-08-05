@@ -8,5 +8,5 @@ from Strategy import Strategy
 #~ strategy = Strategy("default")
 strategy = Strategy("basic", strategyFile="strategies/basic_strategy.csv")
 
-game1 = BlackJack(strategy=strategy, lang="French")
+game1 = BlackJack(strategy=strategy, lang="French", sleep=1)
 game1.playBlackjack()

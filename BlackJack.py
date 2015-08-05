@@ -6,10 +6,11 @@ import time
 
 class BlackJack:
 	
-	def __init__(self, strategy=Strategy("player"), deckNumbers=6, lang="French"): 	# TODO constructors with list of players and deck as parameter
+	def __init__(self, strategy=Strategy("player"), deckNumbers=6, lang="French", sleep=0): 	# TODO constructors with list of players and deck as parameter
 		self.deck = Deck(deckNumbers, lang)
 		self.players = [Player("Player 1", 200), Player("Player 2", 200)]
 		self.strategy = strategy
+		self.sleep = sleep
 	
 	def setDeck(self, newDeck):
 		self.deck = newDeck
@@ -206,7 +207,9 @@ class BlackJack:
 		keepPlaying = True
 		while (keepPlaying):
 			
-			time.sleep(5)
+			if self.sleep > 0:
+				time.sleep(self.sleep)
+				
 			print "--- New Round ----"
 			
 			## playersSplit2 is extended if a player splits, while playersSplit
@@ -309,7 +312,8 @@ class BlackJack:
 
 						#~ playerAction = raw_input(self.players[i].getName() + stringInput)
 						playerAction = self.strategy.getInput(self.players[i].getName() + stringInput, "ACTION",
-										self.deck.cardNumber(dealerCards[0]), playerCards[i], BlackJack.sumCards(self, playerCards[i]))
+										self.deck.cardNumber(dealerCards[0]), playerCards[i], BlackJack.sumCards(self, playerCards[i]),
+										BlackJack.doubleIsValid(self, playerCards[i]), self.splitIsValid(playerCards[i], playersSplit2[i]))
 						
 						if(playerAction == "H"):
 							if (BlackJack.sumCards(self, playerCards[i]) >= 21):
