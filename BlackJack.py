@@ -364,19 +364,27 @@ class BlackJack:
 			j = 0 ## j counts the number of original players
 			cont = True
 			playersBackup = copy.deepcopy(self.players)
+			playersActions = []
 			#~ for i in range(len(self.players)):
 			while cont:
 				
+
+				
 				keepAsking = True
+				playerActionList = []
 				while (keepAsking):
 					
 					#~ print "-------------------",i
 					#~ print "------jjjjj--------",j
+
+					noaction = ""
+					finalPlayerAction = noaction
 					
 					if (BlackJack.sumCards(self, playerCards[i]) >= 21):
 							if verbose:
 								print "You cannot ask for a card anymore" # TODO : better text here
 							keepAsking = False
+							
 					else:
 						
 						questionText = ""
@@ -401,11 +409,14 @@ class BlackJack:
 										self.deck.cardNumber(dealerCards[0]), self.deck.cardNumberList(playerCards[i]), BlackJack.sumCards(self, playerCards[i]),
 										BlackJack.doubleIsValid(self, playerCards[i]), self.splitIsValid(playerCards[i], playersSplit2[i]))
 						
+						finalPlayerAction = playerAction
+						
 						if(playerAction == "H"):
 							if (BlackJack.sumCards(self, playerCards[i]) >= 21):
 								if verbose:
 									print "You cannot ask for a card anymore" # TODO : better text here
 								keepAsking = False
+								finalPlayerAction = noaction
 							else:
 								playerCards[i].append(self.deck.drawCard())
 								if verbose:
@@ -421,6 +432,7 @@ class BlackJack:
 									print "You've chose to Double, you cannot ask for a card anymore"
 								keepAsking = False
 							else:
+								finalPlayerAction = noaction
 								if verbose:
 									print "You can't double in this situation."
 						elif(playerAction == "S"):
@@ -454,10 +466,18 @@ class BlackJack:
 								#~ print BlackJack.displayPlayerCards(self, playerCards, i)
 								
 							else:
-								
+								finalPlayerAction = noaction
 								print "Cannot split here."
 						else:
 							print "Not a valid choice."
+							
+					playerActionList.extend(finalPlayerAction)
+					print "--------------",finalPlayerAction
+						
+					if len(playerActionList) < 1:
+						playerActionList = [noaction]
+						
+					playersActions.append(playerActionList)
 							
 				i = i+1
 				j = j+1
@@ -488,22 +508,38 @@ class BlackJack:
 
 			
 			## TODO : correct amount of money for players who splitted
-			#~ print playersSplit
+			print playersActions
 			k = 0
 			for i in range(len(playersBackup)):
 				cardsPlayer = playerCards[i]
+				
+				## When players are given cards that don't call for action
+				## (e.g. Black Jack), actionsPlayer can be non existent
+				try:
+					actionsPlayer = playersActions[i]
+				except:
+					actionsPlayer = ""
 				if playersSplit[i]:
 					moneyWithSplitResult = self.players[k].money + self.players[k+1].money - playersBackup[i].money
 					#~ print "with split result : ", moneyWithSplitResult
 					playersBackup[i].money = moneyWithSplitResult
 					k = k+1
 					cardsPlayer.extend(playerCards[k])
+					actionsPlayer.extend(playersActions[k])
 				else:
 					playersBackup[i].money = self.players[k].money
 					
 				self.logDF['cards_player'+str(i+1)][self.currentRoundNumber] = str(cardsPlayer).strip('[]')
 				self.logDF['cardsNumber_player'+str(i+1)][self.currentRoundNumber] = str(self.deck.cardNamesList(cardsPlayer)).strip('[]')
 				self.logDF['bet_player'+str(i+1)][self.currentRoundNumber] = bets[i]
+
+				#~ print actionsPlayer
+				try:
+					self.logDF['actions_player'+str(i+1)][self.currentRoundNumber] = str(actionsPlayer).strip('[]')
+				except:					
+					## When players are given cards that don't call for action
+					## (e.g. Black Jack), actionsPlayer can be non existent
+					pass
 					
 				k = k+1
 
