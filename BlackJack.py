@@ -25,9 +25,9 @@ class BlackJack:
 		for i, player in enumerate(self.players):
 			playerNumber = str(i+1)
 			columnsLog.extend(['money_player'+playerNumber,'bet_player'+playerNumber,'cards_player'+playerNumber,
-								'cardsNumber_player'+playerNumber,'actions_player'+playerNumber])
+								'cardsNumber_player'+playerNumber,'actions_player'+playerNumber,'score_player'+playerNumber])
 								
-		columnsLog.extend(['dealerCards','dealerCardsNames','nCardsInDeck'])
+		columnsLog.extend(['dealerCards','dealerCardsNames','dealerScore','nCardsInDeck'])
 		
 		self.logDF = pd.DataFrame(columns=columnsLog)
 		
@@ -472,7 +472,6 @@ class BlackJack:
 							print "Not a valid choice."
 							
 					playerActionList.extend(finalPlayerAction)
-					print "--------------",finalPlayerAction
 						
 					if len(playerActionList) < 1:
 						playerActionList = [noaction]
@@ -505,20 +504,27 @@ class BlackJack:
 			
 			self.logDF['dealerCards'][self.currentRoundNumber] = str(dealerCards).strip('[]')
 			self.logDF['dealerCardsNames'][self.currentRoundNumber] = str(self.deck.cardNamesList(dealerCards)).strip('[]')
-
+			dealerScore = BlackJack.sumCards(self, dealerCards)
+			dealerBlackJack = BlackJack.hasBlackJack(self, dealerCards)
+			if dealerBlackJack:
+				dealerScore = "BJ"
+			self.logDF['dealerScore'][self.currentRoundNumber] = dealerScore
 			
-			## TODO : correct amount of money for players who splitted
-			print playersActions
-			k = 0
-			for i in range(len(playersBackup)):
+			## Compute correct amount of money for players who splitted
+			k = 0 ## k = index with splitted hands
+			for i in range(len(playersBackup)): ## i = index of true number of players
 				cardsPlayer = playerCards[i]
-				
+				scorePlayer = [BlackJack.sumCards(self, playerCards[i])]
+				playerBlackJack = BlackJack.hasBlackJack(self, playerCards[i])
+				if playerBlackJack:
+					scorePlayer = ["BJ"]
 				## When players are given cards that don't call for action
 				## (e.g. Black Jack), actionsPlayer can be non existent
 				try:
 					actionsPlayer = playersActions[i]
 				except:
 					actionsPlayer = ""
+					
 				if playersSplit[i]:
 					moneyWithSplitResult = self.players[k].money + self.players[k+1].money - playersBackup[i].money
 					#~ print "with split result : ", moneyWithSplitResult
@@ -526,12 +532,14 @@ class BlackJack:
 					k = k+1
 					cardsPlayer.extend(playerCards[k])
 					actionsPlayer.extend(playersActions[k])
+					scorePlayer.extend([BlackJack.sumCards(self, playerCards[k])]) ## BJ are not valid on splits
 				else:
 					playersBackup[i].money = self.players[k].money
 					
 				self.logDF['cards_player'+str(i+1)][self.currentRoundNumber] = str(cardsPlayer).strip('[]')
 				self.logDF['cardsNumber_player'+str(i+1)][self.currentRoundNumber] = str(self.deck.cardNamesList(cardsPlayer)).strip('[]')
 				self.logDF['bet_player'+str(i+1)][self.currentRoundNumber] = bets[i]
+				self.logDF['score_player'+str(i+1)][self.currentRoundNumber] = str(scorePlayer).strip('[]')
 
 				#~ print actionsPlayer
 				try:
