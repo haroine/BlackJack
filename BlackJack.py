@@ -24,8 +24,10 @@ class BlackJack:
 		
 		for i, player in enumerate(self.players):
 			playerNumber = str(i+1)
-			columnsLog.extend(['money_player'+playerNumber,'bet_player'+playerNumber,'cards_'+playerNumber,
-								'actions_player'+playerNumber])
+			columnsLog.extend(['money_player'+playerNumber,'bet_player'+playerNumber,'cards_player'+playerNumber,
+								'actions_player'+playerNumber,'win_player'+playerNumber])
+								
+		columnsLog.extend(['dealerCards'])
 		
 		self.logDF = pd.DataFrame(columns=columnsLog)
 		
@@ -240,8 +242,6 @@ class BlackJack:
 					print "Loses : {}".format(-win)
 				
 			self.players[i].addMoney(win)
-			
-			## TODO : return info for logDF
 
 	""" -------- Play BlackJack ! -------- """
 	def playBlackjack(self):
@@ -330,6 +330,8 @@ class BlackJack:
 			
 			if verbose:
 				print BlackJack.displayDealerCards(self, dealerCards)
+				
+			self.logDF['dealerCard'][self.currentRoundNumber] = dealerCards[0]
 			
 			playerCards = []
 			for i in range(len(self.players)):
@@ -477,17 +479,23 @@ class BlackJack:
 			### Display win or lose and addMoney
 			BlackJack.results(self, dealerCards, playerCards, bets, insurancesList)
 			
+			self.logDF['dealerCards'][self.currentRoundNumber] = str(dealerCards).strip('[]')
+			
 			## TODO : correct amount of money for players who splitted
 			#~ print playersSplit
 			k = 0
 			for i in range(len(playersBackup)):
+				cardsPlayer = playerCards[i]
 				if playersSplit[i]:
 					moneyWithSplitResult = self.players[k].money + self.players[k+1].money - playersBackup[i].money
 					#~ print "with split result : ", moneyWithSplitResult
 					playersBackup[i].money = moneyWithSplitResult
 					k = k+1
+					cardsPlayer.extend(playerCards[k])
 				else:
 					playersBackup[i].money = self.players[k].money
+					
+				self.logDF['cards_player'+str(i+1)][self.currentRoundNumber] = cardsPlayer
 					
 				k = k+1
 
