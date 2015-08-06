@@ -106,7 +106,7 @@ class BlackJack:
 	""" Number of cards needed for one round """
 	def cardsNeeded(self):
 
-		return 4*(len(self.players)+1)
+		return 5*(len(self.players)+1)
 	
 	""" True if there are more than cardsNeeded(self) cards left in deck """
 	def enoughCardsLeft(self):
@@ -254,7 +254,8 @@ class BlackJack:
 			
 			self.currentRoundNumber += 1
 			
-			print self.currentRoundNumber
+			#### TODO : progressBar
+			#~ print self.currentRoundNumber
 			
 			if self.currentRoundNumber > self.nRounds :
 				self.logDF.to_csv("logDF.csv")
