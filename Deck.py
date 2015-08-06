@@ -84,3 +84,15 @@ class Deck:
 			return returnList
 		else:
 			return self.cardNumber(cardList)
+			
+	def cardNamesList(self, cardList):
+		
+		cardList = self.cardNumberList(cardList)
+		
+		returnList = []
+		
+		for i, card in enumerate(cardList):
+			
+			returnList.append(self.cardNames[card])
+			
+		return returnList

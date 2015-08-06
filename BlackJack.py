@@ -20,14 +20,14 @@ class BlackJack:
 		self.nRounds = nRounds
 		self.currentRoundNumber = 0
 		
-		columnsLog = ['dealerCard']
+		columnsLog = ['dealerCardNumber','dealerCardName']
 		
 		for i, player in enumerate(self.players):
 			playerNumber = str(i+1)
 			columnsLog.extend(['money_player'+playerNumber,'bet_player'+playerNumber,'cards_player'+playerNumber,
-								'actions_player'+playerNumber,'win_player'+playerNumber])
+								'cardsNumber_player'+playerNumber,'actions_player'+playerNumber])
 								
-		columnsLog.extend(['dealerCards'])
+		columnsLog.extend(['dealerCards','dealerCardsNames','nCardsInDeck'])
 		
 		self.logDF = pd.DataFrame(columns=columnsLog)
 		
@@ -267,6 +267,8 @@ class BlackJack:
 				
 			if verbose:
 				print "--- New Round ----"
+				
+			self.logDF['nCardsInDeck'][self.currentRoundNumber] = len(self.deck.deck)
 			
 			## playersSplit2 is extended if a player splits, while playersSplit
 			## will always have len(self.players) elements
@@ -331,7 +333,9 @@ class BlackJack:
 			if verbose:
 				print BlackJack.displayDealerCards(self, dealerCards)
 				
-			self.logDF['dealerCard'][self.currentRoundNumber] = dealerCards[0]
+			dealerCardNumber = self.deck.cardNumber(dealerCards[0])
+			self.logDF['dealerCardNumber'][self.currentRoundNumber] = dealerCardNumber
+			self.logDF['dealerCardName'][self.currentRoundNumber] = self.deck.cardNames[dealerCardNumber]
 			
 			playerCards = []
 			for i in range(len(self.players)):
@@ -480,6 +484,8 @@ class BlackJack:
 			BlackJack.results(self, dealerCards, playerCards, bets, insurancesList)
 			
 			self.logDF['dealerCards'][self.currentRoundNumber] = str(dealerCards).strip('[]')
+			self.logDF['dealerCardsNames'][self.currentRoundNumber] = str(self.deck.cardNamesList(dealerCards)).strip('[]')
+
 			
 			## TODO : correct amount of money for players who splitted
 			#~ print playersSplit
@@ -495,7 +501,9 @@ class BlackJack:
 				else:
 					playersBackup[i].money = self.players[k].money
 					
-				self.logDF['cards_player'+str(i+1)][self.currentRoundNumber] = cardsPlayer
+				self.logDF['cards_player'+str(i+1)][self.currentRoundNumber] = str(cardsPlayer).strip('[]')
+				self.logDF['cardsNumber_player'+str(i+1)][self.currentRoundNumber] = str(self.deck.cardNamesList(cardsPlayer)).strip('[]')
+				self.logDF['bet_player'+str(i+1)][self.currentRoundNumber] = bets[i]
 					
 				k = k+1
 
