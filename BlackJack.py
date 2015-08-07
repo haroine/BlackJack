@@ -20,7 +20,8 @@ class BlackJack:
 		self.verbose = False
 		self.nRounds = nRounds
 		self.currentRoundNumber = 0
-		self.pbar = ProgressBar(maxval=nRounds).start()
+		self.pbar = ProgressBar(maxval=nRounds+1).start()
+		self.cardCountInt = 0
 		
 		columnsLog = ['dealerCardNumber','dealerCardName']
 		
@@ -29,7 +30,7 @@ class BlackJack:
 			columnsLog.extend(['money_player'+playerNumber,'bet_player'+playerNumber,'cards_player'+playerNumber,
 								'cardsNumber_player'+playerNumber,'actions_player'+playerNumber,'score_player'+playerNumber])
 								
-		columnsLog.extend(['dealerCards','dealerCardsNames','dealerScore','nCardsInDeck'])
+		columnsLog.extend(['dealerCards','dealerCardsNames','dealerScore','nCardsInDeck','cardCount','cardCountCorrected'])
 		
 		self.logDF = pd.DataFrame(columns=columnsLog)
 		
@@ -143,6 +144,39 @@ class BlackJack:
 				return True
 		
 		return False
+		
+	""" Implements card counting"""
+	def cardCount(self, dealerCards, playerCards):
+		
+		cardCount = 0
+		
+		for cardNumber in self.deck.cardNumberList(dealerCards):
+			
+			if (cardNumber == 0) or (cardNumber >= 9):
+				cardCount -= 1
+				continue
+				
+			if (cardNumber >= 1) and (cardNumber <= 5):
+				cardCount += 1
+				continue
+				
+			## cards in [6,8] do not increment count
+				
+		for i in range(len(playerCards)):
+			for cardNumber in self.deck.cardNumberList(playerCards[i]):
+				
+				if (cardNumber == 0) or (cardNumber >= 9):
+					cardCount -= 1
+					continue
+					
+				if (cardNumber >= 1) and (cardNumber <= 5):
+					cardCount += 1
+					continue
+					
+				## cards in [6,8] do not increment count
+
+		
+		return cardCount
  
 	def results(self, dealerCards, playerCards, bets, insurancesList):
 		
@@ -250,6 +284,9 @@ class BlackJack:
 
 	""" -------- Play BlackJack ! -------- """
 	def playBlackjack(self):
+		
+		## When game is reinitialized, so is card count:
+		self.cardCountInt = 0
 		
 		verbose = self.verbose
 		defaultBet = 10
@@ -547,6 +584,11 @@ class BlackJack:
 				self.logDF['cardsNumber_player'+str(i+1)][self.currentRoundNumber] = str(self.deck.cardNamesList(cardsPlayer)).strip('[]')
 				self.logDF['bet_player'+str(i+1)][self.currentRoundNumber] = bets[i]
 				self.logDF['score_player'+str(i+1)][self.currentRoundNumber] = str(scorePlayer).strip('[]')
+				
+				self.cardCountInt += self.cardCount(dealerCards, playerCards)
+				self.logDF['cardCount'][self.currentRoundNumber] = self.cardCountInt
+				remainingDecks = len(self.deck.deck) / self.deck.size + 1
+				self.logDF['cardCountCorrected'][self.currentRoundNumber] = round( float(self.cardCountInt) / float(remainingDecks), 2)
 
 				#~ print actionsPlayer
 				try:
