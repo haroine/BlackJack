@@ -10,7 +10,8 @@ from progressbar import ProgressBar
 class BlackJack:
 	
 	# TODO constructors with list of players and deck as parameter
-	def __init__(self, players, strategy=Strategy("player"), deckNumbers=6, lang="French", sleep=0, nRounds=1000):
+	def __init__(self, players, strategy=Strategy("player"), deckNumbers=6, lang="French", sleep=0, nRounds=1000
+				, logFile="logDF.csv"):
 		self.deck = Deck(deckNumbers, lang)
 		self.players = players
 		self.strategy = strategy
@@ -22,6 +23,7 @@ class BlackJack:
 		self.currentRoundNumber = 0
 		self.pbar = ProgressBar(maxval=nRounds+1).start()
 		self.cardCountInt = 0
+		self.logFile = logFile
 		
 		columnsLog = ['dealerCardNumber','dealerCardName']
 		
@@ -301,7 +303,7 @@ class BlackJack:
 			self.pbar.update(self.currentRoundNumber)
 			
 			if self.currentRoundNumber > self.nRounds :
-				self.logDF.to_csv("logDF.csv")
+				self.logDF.to_csv(self.logFile)
 				return 0
 			
 			self.logDF.loc[self.currentRoundNumber] = np.nan
@@ -343,6 +345,7 @@ class BlackJack:
 					
 			if(len(self.players) < 1):
 				print "No more players."
+				self.logDF.to_csv(self.logFile)
 				return 0
 			
 			### Ask for bets
@@ -367,7 +370,12 @@ class BlackJack:
 							keepAsking = False
 							bets.append(currentBet)
 						else:
-							print "You dont have enough money to place this bet !"
+							if verbose:
+								print "You dont have enough money to place this bet !"
+							else:
+								## In case of AI playing, all in if not enough money left
+								keepAsking = False
+								bets.append(self.players[i].getMoney())
 					except ValueError:
 					   print "Not a valid bet !"
 			
