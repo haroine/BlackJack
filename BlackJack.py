@@ -5,6 +5,7 @@ import copy
 import time
 import pandas as pd
 import numpy as np
+from progressbar import ProgressBar
 
 class BlackJack:
 	
@@ -19,6 +20,7 @@ class BlackJack:
 		self.verbose = False
 		self.nRounds = nRounds
 		self.currentRoundNumber = 0
+		self.pbar = ProgressBar(maxval=nRounds).start()
 		
 		columnsLog = ['dealerCardNumber','dealerCardName']
 		
@@ -33,6 +35,9 @@ class BlackJack:
 		
 		if self.strategy.name == "player":
 			self.verbose = True
+			
+		if not self.verbose:
+			print "Starting",nRounds,"Black Jack simulations..."
 	
 	def setDeck(self, newDeck):
 		self.deck = newDeck
@@ -256,6 +261,7 @@ class BlackJack:
 			
 			#### TODO : progressBar
 			#~ print self.currentRoundNumber
+			self.pbar.update(self.currentRoundNumber)
 			
 			if self.currentRoundNumber > self.nRounds :
 				self.logDF.to_csv("logDF.csv")
@@ -557,7 +563,8 @@ class BlackJack:
 			
 			### If there are enough cards left in deck, continue, else stop
 			if(not BlackJack.enoughCardsLeft(self)):
-				print "No more cards left in deck. Cards will be shuffled."
+				if verbose:
+					print "No more cards left in deck. Cards will be shuffled."
 				keepPlaying = False
 				self.deck = Deck(self.deckNumbers, self.lang)
 				
