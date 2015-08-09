@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-class Strategy:
+class Strategy(object):
 	
 	## TODO : add count
 	
@@ -26,13 +26,14 @@ class Strategy:
 		
 		return raw_input(text)
 		
-	def getInput(self, text, inputType, dealerCard=None, playerCards=None, sumCards=0, doubleIsValid=True, splitIsValid=False):
+	def getInput(self, text, inputType, dealerCard=None, playerCards=None, sumCards=0, doubleIsValid=True
+				, splitIsValid=False, cardCount=0.):
 		
 		if self.name == "player":
 			return self.getRawInput(text)
 		else:
 			if inputType == "BET":
-				return self.inputBet()
+				return self.inputBet(cardCount=cardCount)
 			elif inputType == "INSURANCE":
 				return self.inputInsurance()
 			elif inputType == "ACTION":
@@ -120,6 +121,6 @@ class Strategy:
 		return validatedAction
 			
 		
-	def inputBet(self):
+	def inputBet(self, cardCount=0.):
 		
 		return "1"
