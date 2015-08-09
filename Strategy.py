@@ -37,7 +37,7 @@ class Strategy(object):
 			elif inputType == "INSURANCE":
 				return self.inputInsurance()
 			elif inputType == "ACTION":
-				return self.inputAction(dealerCard, playerCards, sumCards, doubleIsValid, splitIsValid)
+				return self.inputAction(dealerCard, playerCards, sumCards, doubleIsValid, splitIsValid, cardCount)
 		## TODO : other cases (AI strategies)
 		
 		return self.getRawInput(text)
@@ -46,7 +46,7 @@ class Strategy(object):
 		
 		return "N"
 
-	def inputAction(self, dealerCardNumber, playerCards, sumCards, doubleIsValid, splitIsValid):
+	def inputAction(self, dealerCardNumber, playerCards, sumCards, doubleIsValid, splitIsValid, cardCount=0.):
 		
 		if self.strategyDF is None:
 			raise IOError("Strategy file is not loaded.")
@@ -91,7 +91,7 @@ class Strategy(object):
 		
 	""" Some actions are not always valid, this function validates
 	them for the rules in place (to be implemented by hand) """
-	def validateAction(self, action, doubleIsValid, splitIsValid, sumCards, dealerCardNumber):
+	def validateAction(self, action, doubleIsValid, splitIsValid, sumCards, dealerCardNumber, cardCount=0.):
 		
 		validatedAction = action
 		
@@ -116,7 +116,7 @@ class Strategy(object):
 			if splitIsValid:
 				return "P"
 			else:
-				return self.inputAction(dealerCardNumber, [3,4], sumCards, doubleIsValid, splitIsValid)
+				return self.inputAction(dealerCardNumber, [3,4], sumCards, doubleIsValid, splitIsValid, cardCount)
 			
 		return validatedAction
 			
