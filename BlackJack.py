@@ -23,6 +23,7 @@ class BlackJack:
 		self.currentRoundNumber = 0
 		self.pbar = ProgressBar(maxval=nRounds+1).start()
 		self.cardCountInt = 0
+		self.cardCountCorrected = 0.
 		self.logFile = logFile
 		
 		columnsLog = ['dealerCardNumber','dealerCardName']
@@ -289,6 +290,7 @@ class BlackJack:
 		
 		## When game is reinitialized, so is card count:
 		self.cardCountInt = 0
+		self.cardCountCorrected = 0.
 		
 		verbose = self.verbose
 		defaultBet = 10
@@ -358,7 +360,7 @@ class BlackJack:
 					if verbose:
 						questionText = self.players[i].getName() + ", what is your bet (10) ? "
 						
-					inputBet = self.strategy.getInput(questionText, "BET")
+					inputBet = self.strategy.getInput(questionText, "BET", cardCount=self.cardCountCorrected)
 					
 					## Default bet
 					if inputBet == "":
@@ -592,11 +594,6 @@ class BlackJack:
 				self.logDF['cardsNumber_player'+str(i+1)][self.currentRoundNumber] = str(self.deck.cardNamesList(cardsPlayer)).strip('[]')
 				self.logDF['bet_player'+str(i+1)][self.currentRoundNumber] = bets[i]
 				self.logDF['score_player'+str(i+1)][self.currentRoundNumber] = str(scorePlayer).strip('[]')
-				
-				self.cardCountInt += self.cardCount(dealerCards, playerCards)
-				self.logDF['cardCount'][self.currentRoundNumber] = self.cardCountInt
-				remainingDecks = len(self.deck.deck) / self.deck.size + 1
-				self.logDF['cardCountCorrected'][self.currentRoundNumber] = round( float(self.cardCountInt) / float(remainingDecks), 2)
 
 				#~ print actionsPlayer
 				try:
@@ -608,6 +605,14 @@ class BlackJack:
 					
 				k = k+1
 
+			
+			print self.cardCountInt
+			self.cardCountInt += self.cardCount(dealerCards, playerCards)
+			print self.cardCountInt
+			self.logDF['cardCount'][self.currentRoundNumber] = self.cardCountInt
+			remainingDecks = len(self.deck.deck) / self.deck.size + 1
+			self.cardCountCorrected = round( float(self.cardCountInt) / float(remainingDecks), 2)
+			self.logDF['cardCountCorrected'][self.currentRoundNumber] = self.cardCountCorrected
 			
 			self.players = playersBackup
 			
