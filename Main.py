@@ -2,16 +2,18 @@ from Deck import Deck
 from BlackJack import BlackJack
 from Strategy import Strategy
 from Player import Player
+import sys
+from HiLoStrategy import HiLoStrategy
 
-players = [Player("Player 1", 1000), Player("Player 2", 1000)]
+players = [Player("Player 1", 10000)]
 
-#~ strategy = Strategy("player")
-strategy = Strategy(name="basic", strategyFile="strategies/basic_strategy.csv")
+sys.setrecursionlimit(15000)
+#~ strategy = Strategy("player") ## Play with human input (keyboard)
+#~ strategy = Strategy(name="basic", strategyFile="strategies/basic_strategy.csv") ## Basic strategy
+hiLoStrategy = HiLoStrategy(name="custom", strategyFile="strategies/basic_strategy.csv") ## Basic strategy with Hi-Lo count
+#~ randomStrategy = Strategy(name="basic", strategyFile="strategies/randomStrategy.csv") ## Random strategy
 
-for i in [5,4,3,2,1]:
-	
-	print "----",i,"decks"
-	
-	game1 = BlackJack(players=players, strategy=strategy, lang="French", sleep=0, nRounds=10000, 
-					deckNumbers=i, logFile="logDF_10k_"+str(i)+".csv")
-	game1.playBlackjack()
+game1 = BlackJack(players=players, strategy=hiLoStrategy, lang="French", sleep=0, nRounds=10000, 
+				deckNumbers=6, logFile="logDF_analysis_hilo.csv")
+
+game1.playBlackjack()

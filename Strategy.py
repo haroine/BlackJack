@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from Deck import Deck
 
 class Strategy(object):
 	
@@ -46,6 +47,38 @@ class Strategy(object):
 	def inputInsurance(self):
 		
 		return "N"
+		
+	""" Implements card counting (hi-lo method) """
+	def cardCount(self, deck, dealerCards, playerCards):
+		
+		cardCount = 0
+		
+		for cardNumber in deck.cardNumberList(dealerCards):
+			
+			if (cardNumber == 0) or (cardNumber >= 9):
+				cardCount -= 1
+				continue
+				
+			if (cardNumber >= 1) and (cardNumber <= 5):
+				cardCount += 1
+				continue
+				
+			## cards in [6,8] do not increment count
+				
+		for i in range(len(playerCards)):
+			for cardNumber in deck.cardNumberList(playerCards[i]):
+				
+				if (cardNumber == 0) or (cardNumber >= 9):
+					cardCount -= 1
+					continue
+					
+				if (cardNumber >= 1) and (cardNumber <= 5):
+					cardCount += 1
+					continue
+					
+				## cards in [6,8] do not increment count
+
+		return cardCount
 
 	def inputAction(self, dealerCardNumber, playerCards, sumCards, doubleIsValid, splitIsValid, cardCount=0.):
 		

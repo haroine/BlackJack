@@ -147,39 +147,6 @@ class BlackJack:
 				return True
 		
 		return False
-		
-	""" Implements card counting (hi-lo method) """
-	def cardCount(self, dealerCards, playerCards):
-		
-		cardCount = 0
-		
-		for cardNumber in self.deck.cardNumberList(dealerCards):
-			
-			if (cardNumber == 0) or (cardNumber >= 9):
-				cardCount -= 1
-				continue
-				
-			if (cardNumber >= 1) and (cardNumber <= 5):
-				cardCount += 1
-				continue
-				
-			## cards in [6,8] do not increment count
-				
-		for i in range(len(playerCards)):
-			for cardNumber in self.deck.cardNumberList(playerCards[i]):
-				
-				if (cardNumber == 0) or (cardNumber >= 9):
-					cardCount -= 1
-					continue
-					
-				if (cardNumber >= 1) and (cardNumber <= 5):
-					cardCount += 1
-					continue
-					
-				## cards in [6,8] do not increment count
-
-		
-		return cardCount
  
 	def results(self, dealerCards, playerCards, bets, insurancesList):
 		
@@ -606,7 +573,7 @@ class BlackJack:
 				k = k+1
 
 			
-			self.cardCountInt += self.cardCount(dealerCards, playerCards)
+			self.cardCountInt += self.strategy.cardCount(self.deck, dealerCards, playerCards)
 			self.logDF['cardCount'][self.currentRoundNumber] = self.cardCountInt
 			remainingDecks = len(self.deck.deck) / self.deck.size + 1
 			self.cardCountCorrected = round( float(self.cardCountInt) / float(remainingDecks), 2)
