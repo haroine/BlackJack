@@ -606,9 +606,7 @@ class BlackJack:
 				k = k+1
 
 			
-			print self.cardCountInt
 			self.cardCountInt += self.cardCount(dealerCards, playerCards)
-			print self.cardCountInt
 			self.logDF['cardCount'][self.currentRoundNumber] = self.cardCountInt
 			remainingDecks = len(self.deck.deck) / self.deck.size + 1
 			self.cardCountCorrected = round( float(self.cardCountInt) / float(remainingDecks), 2)
