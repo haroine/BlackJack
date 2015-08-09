@@ -42,6 +42,7 @@ class Strategy(object):
 		
 		return self.getRawInput(text)
 		
+	""" Most strategies recommend not to take the insurance """
 	def inputInsurance(self):
 		
 		return "N"

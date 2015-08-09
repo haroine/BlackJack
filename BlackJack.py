@@ -148,7 +148,7 @@ class BlackJack:
 		
 		return False
 		
-	""" Implements card counting"""
+	""" Implements card counting (hi-lo method) """
 	def cardCount(self, dealerCards, playerCards):
 		
 		cardCount = 0
