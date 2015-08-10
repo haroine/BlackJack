@@ -511,6 +511,7 @@ class BlackJack:
 				if verbose:
 					print BlackJack.displayDealerCards(self, dealerCards, True) # Show Dealer cards
 					
+				## Dealer stands on soft 17
 				if(BlackJack.sumCards(self, dealerCards) <= 16):
 					if verbose:
 						print "Dealer draws"
