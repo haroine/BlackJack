@@ -10,11 +10,17 @@ from progressbar import ProgressBar
 class BlackJack:
 	
 	# TODO constructors with list of players and deck as parameter
-	def __init__(self, players, strategy=Strategy("player"), deckNumbers=6, lang="French", sleep=0, nRounds=1000
+	def __init__(self, players, strategyList=None, deckNumbers=6, lang="French", sleep=0, nRounds=1000
 				, logFile="logDF.csv"):
 		self.deck = Deck(deckNumbers, lang)
 		self.players = players
-		self.strategy = strategy
+		self.strategyList = strategyList
+		
+		if strategyList is None:
+			strategyList = []*len(self.players)
+			for i in range(len(self.players)):
+				strategyList[i] = Strategy("player")
+		
 		self.sleep = sleep
 		self.deckNumbers = deckNumbers
 		self.lang = lang
@@ -37,8 +43,10 @@ class BlackJack:
 		
 		self.logDF = pd.DataFrame(columns=columnsLog)
 		
-		if self.strategy.name == "player":
-			self.verbose = True
+		for i in range(len(self.players)):
+			if self.strategyList[i].name == "player":
+				self.verbose = True
+				continue
 			
 		if not self.verbose:
 			print "Starting",nRounds,"Black Jack simulations..."
@@ -327,7 +335,7 @@ class BlackJack:
 					if verbose:
 						questionText = self.players[i].getName() + ", what is your bet (10) ? "
 						
-					inputBet = self.strategy.getInput(questionText, "BET", cardCount=self.cardCountCorrected)
+					inputBet = self.strategyList[i].getInput(questionText, "BET", cardCount=self.cardCountCorrected)
 					
 					## Default bet
 					if inputBet == "":
@@ -374,7 +382,7 @@ class BlackJack:
 					if verbose:
 						questionText = self.players[i].getName() + ", do you want the insurance Y/N (N) ?"
 						
-					playerAction = self.strategy.getInput(questionText, "INSURANCE")
+					playerAction = self.strategyList[i].getInput(questionText, "INSURANCE")
 			
 					if playerAction == "Y":
 						insurancesList[i] = True
@@ -426,7 +434,7 @@ class BlackJack:
 							questionText = self.players[i].getName() + stringInput
 
 						#~ playerAction = raw_input(self.players[i].getName() + stringInput)
-						playerAction = self.strategy.getInput(questionText, "ACTION",
+						playerAction = self.strategyList[i].getInput(questionText, "ACTION",
 										self.deck.cardNumber(dealerCards[0]), self.deck.cardNumberList(playerCards[i]), BlackJack.sumCards(self, playerCards[i]),
 										BlackJack.doubleIsValid(self, playerCards[i]), self.splitIsValid(playerCards[i], playersSplit2[i]))
 						
@@ -473,6 +481,7 @@ class BlackJack:
 								
 								playerCards.insert(i+1, [splittedCard, self.deck.drawCard()])
 								
+								self.strategyList.insert(i+1, self.strategyList[i])
 								bets.insert(i+1, bets[i])
 								insurancesList.insert(i+1, insurancesList[i])
 								playersSplit2.insert(i+1, playersSplit2[i])
@@ -574,7 +583,7 @@ class BlackJack:
 				k = k+1
 
 			
-			self.cardCountInt += self.strategy.cardCount(self.deck, dealerCards, playerCards)
+			self.cardCountInt += self.strategyList[i].cardCount(self.deck, dealerCards, playerCards)
 			self.logDF['cardCount'][self.currentRoundNumber] = self.cardCountInt
 			remainingDecks = len(self.deck.deck) / self.deck.size + 1
 			self.cardCountCorrected = round( float(self.cardCountInt) / float(remainingDecks), 2)
