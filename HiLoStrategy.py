@@ -65,4 +65,5 @@ class HiLoStrategy(Strategy):
 		if (cardCount >= 1.):
 			bet = int(cardCount)
 
-		return str(bet)
+		#~ return str(bet)
+		return "1"
