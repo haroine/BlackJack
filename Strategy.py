@@ -91,24 +91,24 @@ class Strategy(object):
 		## Rows 25-33: pairs (10;10 -> 2;2)
 		
 		## Soft totals
-		if (np.product(playerCards) == 0):
+		if (np.product(playerCards) == 0 and len(playerCards) <= 2):
 			
-			cardIndex = max(playerCards[0], playerCards[0])
-			cardIndex = min(cardIndex, 10)
+			cardIndex = max(playerCards)
+			cardIndex = min(cardIndex, 8)
 			
 			rowNumber = 24 - cardIndex
 			
 			if cardIndex == 10: ## Black Jack, nothing won't be asked anyway
-				return "H"
+				return "BJ"
 			
-			action = self.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber], doubleIsValid, splitIsValid, 
+			action = self.validateAction(self.strategyDF.iloc[rowNumber][dealerCardNumber], doubleIsValid, splitIsValid, 
 											sumCards, dealerCardNumber)
 			return action
 			
 		## Pairs
-		if (playerCards[0] == playerCards[1]):
+		if (playerCards[0] == playerCards[1] and len(playerCards) <= 2):
 			
-			cardIndex = min(playerCards[0],10)
+			cardIndex = min(playerCards[0],9)
 			
 			rowNumber = 34 - playerCards[0]
 			
@@ -120,8 +120,6 @@ class Strategy(object):
 		action = self.validateAction(self.strategyDF.iloc[20-sumCards][dealerCardNumber], doubleIsValid, splitIsValid, 
 										sumCards, dealerCardNumber)
 		return action
-		
-		return "H"
 		
 	""" Some actions are not always valid, this function validates
 	them for the rules in place (to be implemented by hand) """
@@ -146,7 +144,7 @@ class Strategy(object):
 				return "S"
 				
 		## If split is not valid, get action from same hard total
-		if action=="P":
+		if action == "P":
 			if splitIsValid:
 				return "P"
 			else:

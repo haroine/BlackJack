@@ -14,9 +14,9 @@ sys.setrecursionlimit(15000)
 human = Strategy("player") ## Play with human input (keyboard)
 basicStrategy = Strategy(name="basic", strategyFile="strategies/basic_strategy.csv") ## Basic strategy
 hiLoStrategy = HiLoStrategy(name="custom", strategyFile="strategies/basic_strategy.csv") ## Basic strategy with Hi-Lo count
-randomStrategy = Strategy(name="basic", strategyFile="strategies/randomStrategy.csv") ## "Random" strategy
+randomStrategy = Strategy(name="random", strategyFile="strategies/randomStrategy.csv") ## "Random" strategy
 
-strategyList = [basicStrategy, randomStrategy]
+strategyList = [hiLoStrategy, randomStrategy]
 
 game1 = BlackJack(players=players, strategyList=strategyList, lang="French", sleep=0, nRounds=10000, 
 				deckNumbers=6, logFile="logDF_test_2_strategies.csv")
