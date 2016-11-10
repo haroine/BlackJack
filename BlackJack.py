@@ -11,7 +11,7 @@ class BlackJack:
 	
 	# TODO constructors with list of players and deck as parameter
 	def __init__(self, players, strategyList=None, deckNumbers=6, lang="French", sleep=0, nRounds=1000
-				, logFile="logDF.csv", customCardNumbers=None):
+				, logFile="logDF.csv", customCardNumbers=None, negativeCount=[], positiveCount=[]):
 		self.deck = Deck(deckNumbers, lang, customCardNumbers=customCardNumbers)
 		self.players = players
 		self.strategyList = strategyList
@@ -19,7 +19,7 @@ class BlackJack:
 		if strategyList is None:
 			strategyList = []*len(self.players)
 			for i in range(len(self.players)):
-				strategyList[i] = Strategy("player")
+				strategyList[i] = Strategy("player", negativeCount=negativeCount, positiveCount=negativeCount)
 		
 		self.sleep = sleep
 		self.deckNumbers = deckNumbers
@@ -32,6 +32,9 @@ class BlackJack:
 		self.cardCountCorrected = 0.
 		self.logFile = logFile
 		self.customCardNumbers = customCardNumbers
+		self.negativeCount = negativeCount
+		self.positiveCount = positiveCount
+		
 		
 		columnsLog = ['dealerCardNumber','dealerCardName']
 		

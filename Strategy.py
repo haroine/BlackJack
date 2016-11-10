@@ -6,10 +6,12 @@ class Strategy(object):
 	
 	## TODO : add count
 	
-	def __init__(self, name="player", strategyFile=None):
+	def __init__(self, name="player", strategyFile=None, negativeCount=[], positiveCount=[]):
 		self.name = name
 		self.strategyFile = strategyFile
 		self.strategyDF = None
+		self.negativeCount = negativeCount
+		self.positiveCount = positiveCount
 		
 		if strategyFile is not None:
 			self.strategyDF = pd.DataFrame.from_csv(strategyFile)
@@ -55,11 +57,11 @@ class Strategy(object):
 		
 		for cardNumber in deck.cardNumberList(dealerCards):
 			
-			if (cardNumber == 0) or (cardNumber >= 9):
+			if (cardNumber in self.negativeCount):
 				cardCount -= 1
 				continue
 				
-			if (cardNumber >= 1) and (cardNumber <= 5):
+			if (cardNumber in self.positiveCount):
 				cardCount += 1
 				continue
 				
@@ -68,11 +70,11 @@ class Strategy(object):
 		for i in range(len(playerCards)):
 			for cardNumber in deck.cardNumberList(playerCards[i]):
 				
-				if (cardNumber == 0) or (cardNumber >= 9):
+				if (cardNumber in self.negativeCount):
 					cardCount -= 1
 					continue
 					
-				if (cardNumber >= 1) and (cardNumber <= 5):
+				if (cardNumber in self.positiveCount):
 					cardCount += 1
 					continue
 					
