@@ -11,8 +11,8 @@ class BlackJack:
 	
 	# TODO constructors with list of players and deck as parameter
 	def __init__(self, players, strategyList=None, deckNumbers=6, lang="French", sleep=0, nRounds=1000
-				, logFile="logDF.csv"):
-		self.deck = Deck(deckNumbers, lang)
+				, logFile="logDF.csv", customCardNumbers=None):
+		self.deck = Deck(deckNumbers, lang, customCardNumbers=customCardNumbers)
 		self.players = players
 		self.strategyList = strategyList
 		
@@ -31,6 +31,7 @@ class BlackJack:
 		self.cardCountInt = 0
 		self.cardCountCorrected = 0.
 		self.logFile = logFile
+		self.customCardNumbers = customCardNumbers
 		
 		columnsLog = ['dealerCardNumber','dealerCardName']
 		
@@ -122,8 +123,10 @@ class BlackJack:
 		
 	""" Number of cards needed for one round """
 	def cardsNeeded(self):
-
-		return 5*(len(self.players)+1)
+		if self.customCardNumbers is None:
+			return 5*(len(self.players)+1)
+		else:
+			return 2*21*(len(self.players)+1)*len(self.customCardNumbers) / sum(self.customCardNumbers)
 	
 	""" True if there are more than cardsNeeded(self) cards left in deck """
 	def enoughCardsLeft(self):
@@ -596,7 +599,7 @@ class BlackJack:
 				if verbose:
 					print "No more cards left in deck. Cards will be shuffled."
 				keepPlaying = False
-				self.deck = Deck(self.deckNumbers, self.lang)
+				self.deck = Deck(self.deckNumbers, self.lang, customCardNumbers=self.customCardNumbers)
 				
 				#~ try:
 					#~ BlackJack.playBlackjack(self)
