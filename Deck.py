@@ -2,11 +2,12 @@ import random
 
 class Deck:
 	
-	def __init__(self, n=1, lang="French"):
+	def __init__(self, n=1, lang="French", size=52, customCardNumbers=None):
 		""" By default, 52-card deck (french deck), shuffled """
-		self.size = 52
-		self.deck = Deck.init(self, n)
 		self.lang = lang
+
+		self.size = size
+		self.deck = Deck.init(self, n)
 		
 		if lang=="English":
 			self.cardNames = ["Ace","2","3","4","5","6","7","8","9","10","Jack","Queen","King"]
@@ -16,6 +17,14 @@ class Deck:
 			self.colorNames = ["Trefle","Pique","Carreau","Coeur"]	
 		
 		Deck.shuffle(self)
+
+		if customCardNumbers is not None:
+			selectedDeck = []
+
+			for card in self.deck:
+				if self.cardNumber(card) in customCardNumbers:
+					selectedDeck.extend([card])
+			self.deck = selectedDeck
 		
 	def __repr__(self):
 		return Deck.displayCard(self, self.deck)

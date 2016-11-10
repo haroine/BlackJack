@@ -18,7 +18,9 @@ randomStrategy = Strategy(name="random", strategyFile="strategies/randomStrategy
 
 strategyList = [hiLoStrategy, randomStrategy]
 
-game1 = BlackJack(players=players, strategyList=strategyList, lang="French", sleep=0, nRounds=10000, 
-				deckNumbers=6, logFile="logDF_test_2_strategies.csv")
+customCardNumbers = [0,1,2,3,4]
+
+game1 = BlackJack(players=players, strategyList=strategyList, lang="French", sleep=0, nRounds=1000, 
+				deckNumbers=6, logFile="data/test_custom_deck.csv", customCardNumbers=customCardNumbers)
 
 game1.playBlackjack()
