@@ -65,20 +65,29 @@ class Strategy(object):
 				cardCount += 1
 				continue
 				
-			## cards in [6,8] do not increment count
 				
 		for i in range(len(playerCards)):
-			for cardNumber in deck.cardNumberList(playerCards[i]):
+			if(not isinstance(playerCards[i],int)):
+				for cardNumber in deck.cardNumberList(playerCards[i]):
 				
+					if (cardNumber in self.negativeCount):
+						cardCount -= 1
+						continue
+					
+					if (cardNumber in self.positiveCount):
+						cardCount += 1
+						continue
+					
+			else:
+				cardNumber = playerCards[i]
 				if (cardNumber in self.negativeCount):
 					cardCount -= 1
 					continue
-					
+				
 				if (cardNumber in self.positiveCount):
 					cardCount += 1
 					continue
-					
-				## cards in [6,8] do not increment count
+
 
 		return cardCount
 

@@ -92,7 +92,7 @@ class Deck:
 				
 			return returnList
 		else:
-			return self.cardNumber(cardList)
+			return self.cardNumber(cardList[0])
 			
 	def cardNamesList(self, cardList):
 		

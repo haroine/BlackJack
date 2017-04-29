@@ -19,7 +19,7 @@ class BlackJack:
 		if strategyList is None:
 			strategyList = []*len(self.players)
 			for i in range(len(self.players)):
-				strategyList[i] = Strategy("player", negativeCount=negativeCount, positiveCount=negativeCount)
+				strategyList[i] = Strategy("player", negativeCount=negativeCount, positiveCount=positiveCount)
 		
 		self.sleep = sleep
 		self.deckNumbers = deckNumbers
@@ -588,12 +588,26 @@ class BlackJack:
 					
 				k = k+1
 
-			
-			self.cardCountInt += self.strategyList[i].cardCount(self.deck, dealerCards, playerCards)
+			## Correction to account for splits when counting:
+			playerCardsCorrected = copy.deepcopy(playerCards)
+
+			for i in range(len(playersBackup)):
+				if playersSplit[i]:
+					tempList = playerCardsCorrected[i+1]
+					del tempList[0]
+
+			playerCardsCorrected = [item for sublist in playerCardsCorrected for item in sublist] ## flatten list of lists
+			playerCardsCorrected = list(set(playerCardsCorrected)) ## unique elements of playerCardsCorrected
+
+			self.cardCountInt += self.strategyList[i].cardCount(self.deck, dealerCards, playerCardsCorrected)
 			self.logDF['cardCount'][self.currentRoundNumber] = self.cardCountInt
 			remainingDecks = len(self.deck.deck) / self.deck.size + 1
 			self.cardCountCorrected = round( float(self.cardCountInt) / float(remainingDecks), 2)
 			self.logDF['cardCountCorrected'][self.currentRoundNumber] = self.cardCountCorrected
+
+			if verbose:
+				print "----------- count:  -----------"
+				print self.cardCountInt
 			
 			self.players = playersBackup
 			
